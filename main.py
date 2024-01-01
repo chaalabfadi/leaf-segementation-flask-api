@@ -6,6 +6,7 @@ import numpy as np
 from skimage.transform import resize
 from tensorflow.keras.models import load_model
 import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
 
 app = Flask(__name__)
 CORS(app)

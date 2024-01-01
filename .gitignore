@@ -1,4 +1,5 @@
 #Ignore Virtual environment
 .venv/
 #Ignor idea
+.idea
 .idea/

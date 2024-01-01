@@ -6,8 +6,10 @@ import numpy as np
 from skimage.transform import resize
 from tensorflow.keras.models import load_model
 import os
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
-import cProfile
+import logging
+
+# Configure the logging
+logging.basicConfig(filename='app.log', level=logging.DEBUG)
 
 app = Flask(__name__)
 CORS(app)
@@ -23,28 +25,29 @@ class LeafSegmentation(Resource):
     def post(self):
         # Handle image upload
         if 'image' not in request.files:
+            logging.error("No file part")
             return jsonify({'error': 'No image provided'}), 400
 
         image_file = request.files['image']
         image_path = "uploads/image.jpg"
 
         # Save the uploaded image
-        print('Image being uploaded: ' + image_path)
+        logging.info('Image being uploaded: ' + image_path)
         image_file.save(image_path)
-        print('Image uploaded')
+        logging.info('Image uploaded')
         # Perform leaf segmentation
-        print('Image is being processed.')
+        logging.info('Image is being processed.')
         segmented_mask = predict_leaf_disease(image_path)
-        print('Segmented mask is being processed.')
+        logging.info('Segmented mask is being processed.')
 
         segmented_mask_image_filename = "segmented_mask.png"
         segmented_mask_image_path = os.path.join(app.config['OUTPUT_FOLDER'], segmented_mask_image_filename)
-        print('Segmented mask')
+        logging.info('Segmented mask')
         Image.fromarray(segmented_mask * 255).save(segmented_mask_image_path)
 
         # Get the full URL of the segmented mask image
         segmented_mask_image_url = request.url_root + 'outputs/' + segmented_mask_image_filename
-        print('Saved segmented mask')
+        logging.info('Saved segmented mask')
 
         return jsonify({'segmented_mask_image_url': segmented_mask_image_url})
 
@@ -71,7 +74,4 @@ def uploaded_file(filename):
 
 
 if __name__ == '__main__':
-    with cProfile.Profile() as pr:
-        app.run(debug=False)
-
-    pr.print_stats()
+    app.run(debug=False)

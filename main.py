@@ -28,18 +28,22 @@ class LeafSegmentation(Resource):
         image_path = "uploads/image.jpg"
 
         # Save the uploaded image
+        print('Image being uploaded: ' + image_path)
         image_file.save(image_path)
-
+        print('Image uploaded')
         # Perform leaf segmentation
+        print('Image is being processed.')
         segmented_mask = predict_leaf_disease(image_path)
+        print('Segmented mask is being processed.')
 
         segmented_mask_image_filename = "segmented_mask.png"
         segmented_mask_image_path = os.path.join(app.config['OUTPUT_FOLDER'], segmented_mask_image_filename)
-
+        print('Segmented mask')
         Image.fromarray(segmented_mask * 255).save(segmented_mask_image_path)
 
         # Get the full URL of the segmented mask image
         segmented_mask_image_url = request.url_root + 'outputs/' + segmented_mask_image_filename
+        print('Saved segmented mask')
 
         return jsonify({'segmented_mask_image_url': segmented_mask_image_url})
 

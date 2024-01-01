@@ -7,6 +7,7 @@ from skimage.transform import resize
 from tensorflow.keras.models import load_model
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '1'
+import cProfile
 
 app = Flask(__name__)
 CORS(app)
@@ -70,4 +71,7 @@ def uploaded_file(filename):
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    with cProfile.Profile() as pr:
+        app.run(debug=False)
+
+    pr.print_stats()
